@@ -2,10 +2,10 @@
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardHeader,
   CardContent,
-  CardTitle,
   CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,9 @@ export default function CreateLinkField() {
         <Label className="text-xl font-semibold">
           Create New Shorten Url Link
         </Label>
-        <Button>Cancel</Button>
+        <Button variant="secondary">
+          <a href="/dashboard">Cancel</a>
+        </Button>
       </div>
       <form className="flex flex-col gap-4 justify-center">
         <Card>
@@ -58,7 +60,7 @@ export default function CreateLinkField() {
             </div>
 
             <div className="flex flex-col gap-4">
-              <Label className="text-xl"> Title</Label>
+              <Label className="text-xl">Title</Label>
               <Input type="text" className="text-lg" maxLength={30} required />
             </div>
           </CardContent>

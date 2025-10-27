@@ -1,3 +1,4 @@
+import { prisma } from "@/app/lib/prismaConfig";
 import { verifyWebhook } from "@clerk/backend/webhooks";
 
 export async function POST(request: Request) {
@@ -12,6 +13,9 @@ export async function POST(request: Request) {
     if (evt.type === "user.created") {
       console.log("New user created:", evt.data.id);
       // Handle user creation
+      try {
+        //await prisma.user.
+      } catch (error) {}
     }
 
     return new Response("Success", { status: 200 });

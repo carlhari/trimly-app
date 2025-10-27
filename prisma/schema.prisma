@@ -13,3 +13,22 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  links     Link[]
+}
+
+model Link {
+  id          String  @id @default(cuid())
+  title       String
+  generateQR  Boolean @default(false)
+  originalUrl String
+  shortenUrl  String
+  views       Int     @default(0)
+  User        User?   @relation(fields: [userId], references: [id])
+  userId      String?
+}
