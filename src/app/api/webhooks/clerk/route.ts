@@ -1,26 +1,44 @@
-import { prisma } from "@/app/lib/prismaConfig";
+import prisma from "@/app/lib/prisma";
 import { verifyWebhook } from "@clerk/backend/webhooks";
+import { NextResponse } from "next/server";
+
+// Extract the primary email string from the webhook event
+function getPrimaryEmail(evt: any): string | null {
+  const emailId = evt.data.primary_email_address_id;
+  const emailObj = evt.data.email_addresses?.find(
+    (email: { id: string; email_address: string }) => email.id === emailId,
+  );
+  return emailObj?.email_address ?? null;
+}
 
 export async function POST(request: Request) {
   try {
     const evt = await verifyWebhook(request);
+    const email = getPrimaryEmail(evt);
 
-    // Access the event data
-    const { id } = evt.data;
-    const eventType = evt.type;
-
-    // Handle specific event types
-    if (evt.type === "user.created") {
-      console.log("New user created:", evt.data.id);
-      // Handle user creation
-      try {
-        //await prisma.user.
-      } catch (error) {}
+    if (!email) {
+      return NextResponse.json(
+        { error: "Primary email not found" },
+        { status: 400 },
+      );
     }
 
-    return new Response("Success", { status: 200 });
+    console.log("Clerk Webhook type:", evt.type);
+
+    if (evt.type === "user.created") {
+      await prisma.user.create({ data: { email } });
+    }
+
+    if (evt.type === "user.deleted") {
+      await prisma.user.delete({ where: { email } });
+    }
+
+    return NextResponse.json({ status: "ok" });
   } catch (err) {
     console.error("Webhook verification failed:", err);
-    return new Response("Webhook verification failed", { status: 400 });
+    return NextResponse.json(
+      { error: "Webhook verification failed" },
+      { status: 500 },
+    );
   }
 }

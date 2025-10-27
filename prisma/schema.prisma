@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  output   = "../src/generated"
 }
 
 datasource db {
@@ -29,6 +29,6 @@ model Link {
   originalUrl String
   shortenUrl  String
   views       Int     @default(0)
-  User        User?   @relation(fields: [userId], references: [id])
+  User        User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId      String?
 }
