@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import LinkCard from "../components/LinkCard";
 import {
@@ -8,14 +9,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-
+import { useEffect } from "react";
+import axios from "axios";
 export default function Page() {
+  useEffect(() => {
+    async function get_link_list() {
+      try {
+        const { data } = await axios.post("/api/link/get_list");
+        if (data.ok === false) return console.error();
+
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    get_link_list();
+  }, []);
   return (
     <>
       <div className="flex w-full justify-between items-center">
         <h1 className="text-3xl font-semibold">Link List</h1>
         <Button>
-          <Link href="/create">Create Link</Link>
+          <Link href="/dashboard/create">Create Link</Link>
         </Button>
       </div>
       <hr />,
