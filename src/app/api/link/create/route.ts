@@ -2,7 +2,7 @@ import prisma from "@/app/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
   const { originalUrl, shortenUrl, title, generateQR } = await req.json();
   const user = await currentUser();
 
@@ -22,6 +22,9 @@ export default async function POST(req: NextRequest) {
         originalUrl: originalUrl,
         shortenUrl: shortenUrl,
         generateQR: generateQR,
+        User: {
+          connect: { email: user.primaryEmailAddress?.emailAddress },
+        },
       },
     });
 
@@ -35,7 +38,7 @@ export default async function POST(req: NextRequest) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Error: error occured while creating  link" },
+      { error: "Error: error occured while creating new link" },
       { status: 500 },
     );
   }

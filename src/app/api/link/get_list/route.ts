@@ -1,5 +1,6 @@
 import prisma from "@/app/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function POST() {
@@ -20,14 +21,26 @@ export async function POST() {
       },
     });
 
-    return NextResponse.json(
-      {
-        data: linklist,
-        ok: true,
-        msg: "Log: Success retrieving link list data",
+    const linklistCount = await prisma.link.count({
+      where: {
+        User: {
+          email: user.primaryEmailAddress?.emailAddress,
+        },
       },
-      { status: 200 },
-    );
+    });
+
+    if (linklistCount === 0)
+      return NextResponse.json({ ok: true, empty: true });
+
+    if (linklist)
+      return NextResponse.json(
+        {
+          data: linklist,
+          ok: true,
+          msg: "Log: Success retrieving link list data",
+        },
+        { status: 200 },
+      );
   } catch (error) {
     console.error(error);
     return NextResponse.json(

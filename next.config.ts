@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
     "*.local-origin.dev",
     "*.ngrok-free.dev",
   ],
+
+  reactStrictMode: false,
 };
 
 export default nextConfig;
