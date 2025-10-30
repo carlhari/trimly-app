@@ -14,10 +14,12 @@ export default function LinkCard({
   item,
   setSelectedItem,
   selectedItem,
+  handleUpdate,
 }: {
   item: LinkListTypes;
   setSelectedItem: any;
   selectedItem: Array<any>;
+  handleUpdate: (id: string) => void;
 }) {
   return (
     <Card className="border-blue-200">
@@ -40,9 +42,8 @@ export default function LinkCard({
             <p>{item.title}</p>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="ghost">Copy</Button>
-            <Button variant="outline">Share</Button>
-            <Button>Settings</Button>
+            <Button variant="outline">Copy</Button>
+            <Button onClick={() => handleUpdate(item.id)}>Update</Button>
           </div>
         </CardTitle>
         <CardDescription>

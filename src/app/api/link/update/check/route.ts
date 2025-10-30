@@ -2,8 +2,7 @@ import prisma from "@/app/lib/prisma";
 import { verifyWebhook } from "@clerk/backend/webhooks";
 import { NextResponse } from "next/server";
 
-// Extract the primary email string from the webhook event
-function getPrimaryEmail(evt:any): string | null {
+function getPrimaryEmail(evt: any): string | null {
   const emailId = evt.data.primary_email_address_id;
   const emailObj = evt.data.email_addresses?.find(
     (email: { id: string; email_address: string }) => email.id === emailId,
