@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LinkListTypes } from "../types/LinkList";
-
+import QRCode from "qrcode";
 export default function LinkCard({
   item,
   setSelectedItem,
@@ -26,7 +26,6 @@ export default function LinkCard({
   const time = new Date(item.createdAt).toLocaleTimeString("pht", {
     timeStyle: "short",
   });
-
   return (
     <Card className="border-blue-200">
       <CardHeader>
@@ -74,9 +73,11 @@ export default function LinkCard({
           <div>
             {date} | {time}
           </div>
-          <Button variant={"link"} onClick={() => handleQR(item.id)}>
-            View QR Code
-          </Button>
+          {item.generateQR && (
+            <Button variant={"link"} onClick={() => handleQR(item.id)}>
+              View QR Code
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

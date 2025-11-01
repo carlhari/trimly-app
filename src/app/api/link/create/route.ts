@@ -1,10 +1,12 @@
 import prisma from "@/app/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import QRCode from "qrcode";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { originalUrl, shortenUrl, title, generateQR } = await req.json();
   const user = await currentUser();
+  let qrImage: string;
 
   if (!user)
     return NextResponse.json(
@@ -37,7 +39,6 @@ export async function POST(req: NextRequest) {
         title: title,
         originalUrl: originalUrl,
         shortenUrl: shortenUrl,
-        generateQR: generateQR,
         User: {
           connect: { email: user.primaryEmailAddress?.emailAddress },
         },

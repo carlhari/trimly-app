@@ -5,4 +5,5 @@ export interface LinkListTypes {
   createdAt: string;
   views: number;
   title: string;
+  generateQR: boolean;
 }
