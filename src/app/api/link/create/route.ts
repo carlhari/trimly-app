@@ -11,11 +11,27 @@ export async function POST(req: NextRequest) {
       {
         error:
           "Error: Failed to retrieve user data while processing create new link",
+        ok: false,
       },
-      { status: 500 },
+      { status: 401 },
     );
 
   try {
+    const isExistingShortenUrl = await prisma.link.findUnique({
+      where: {
+        shortenUrl: shortenUrl,
+      },
+    });
+
+    if (isExistingShortenUrl)
+      return NextResponse.json(
+        {
+          error: "Error: Shortened Url already exists please try again",
+          ok: false,
+        },
+        { status: 401 },
+      );
+
     const createLink = await prisma.link.create({
       data: {
         title: title,
@@ -30,15 +46,15 @@ export async function POST(req: NextRequest) {
 
     if (!createLink)
       return NextResponse.json(
-        { error: "Error: Failed to create new link" },
-        { status: 400 },
+        { error: "Error: Failed to create new link", ok: false },
+        { status: 401 },
       );
 
     return NextResponse.json({ ok: true, msg: "Success: New Link Created" });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Error: error occured while creating new link" },
+      { error: "Error: error occured while creating new link", ok: false },
       { status: 500 },
     );
   }

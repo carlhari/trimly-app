@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Page() {
   const [originalUrl, setOriginalUrl] = useState<string>("");
@@ -27,24 +28,31 @@ export default function Page() {
     e.preventDefault();
     setSubmit(true);
     try {
-      await axios
-        .post(
-          "/api/link/create",
-          {
-            originalUrl,
-            shortenUrl,
-            generateQR,
-            title,
-          },
-          { signal: controller.signal },
-        )
-        .finally(() => {
-          setSubmit(false);
-          setOriginalUrl("");
-          setShortenUrl("");
-          setGenerateQR(false);
-          setTitle("");
-        });
+      const createPromise = axios.post(
+        "/api/link/create",
+        {
+          originalUrl,
+          shortenUrl,
+          generateQR,
+          title,
+        },
+        { signal: controller.signal },
+      );
+
+      toast.promise(createPromise, {
+        error: "Failed to create link",
+        success: "Link created successfully!",
+        loading: "Creating link...",
+      });
+
+      createPromise.finally(() => {
+        setSubmit(false);
+        setOriginalUrl("");
+        setShortenUrl("");
+        setGenerateQR(false);
+        setTitle("");
+        router.push("/dashboard");
+      });
     } catch (error) {
       console.error(error);
     }

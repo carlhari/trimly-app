@@ -265,19 +265,19 @@ export type LinkOrderByWithRelationInput = {
 
 export type LinkWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  shortenUrl?: string
   AND?: Prisma.LinkWhereInput | Prisma.LinkWhereInput[]
   OR?: Prisma.LinkWhereInput[]
   NOT?: Prisma.LinkWhereInput | Prisma.LinkWhereInput[]
   title?: Prisma.StringFilter<"Link"> | string
   generateQR?: Prisma.BoolFilter<"Link"> | boolean
   originalUrl?: Prisma.StringFilter<"Link"> | string
-  shortenUrl?: Prisma.StringFilter<"Link"> | string
   views?: Prisma.IntFilter<"Link"> | number
   createdAt?: Prisma.DateTimeFilter<"Link"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Link"> | Date | string
   userId?: Prisma.StringNullableFilter<"Link"> | string | null
   User?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-}, "id">
+}, "id" | "shortenUrl">
 
 export type LinkOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

@@ -1,4 +1,3 @@
-import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,12 +14,19 @@ export default function LinkCard({
   setSelectedItem,
   selectedItem,
   handleUpdate,
+  handleQR,
 }: {
   item: LinkListTypes;
   setSelectedItem: any;
   selectedItem: Array<any>;
   handleUpdate: (id: string) => void;
+  handleQR: (id: string) => void;
 }) {
+  const date = new Date(item.createdAt).toDateString();
+  const time = new Date(item.createdAt).toLocaleTimeString("pht", {
+    timeStyle: "short",
+  });
+
   return (
     <Card className="border-blue-200">
       <CardHeader>
@@ -38,28 +44,39 @@ export default function LinkCard({
                 )
               }
             />
-            <Avatar></Avatar>
             <p>{item.title}</p>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="outline">Copy</Button>
+            <Button
+              variant="outline"
+              onClick={() => navigator.clipboard.writeText(item.shortenUrl)}
+            >
+              Copy
+            </Button>
             <Button onClick={() => handleUpdate(item.id)}>Update</Button>
           </div>
         </CardTitle>
         <CardDescription>
           <div className="flex flex-col">
-            <a href="" className="text-blue-600 font-semibold">
-              {item.shortenUrl}
+            <a
+              href={`/${item.shortenUrl}`}
+              className="text-blue-600 font-semibold"
+            >
+              localhost:3000/{item.shortenUrl}
             </a>
-            <a href="">{item.originalUrl}</a>
+            <a href={`${item.originalUrl}`}>{item.originalUrl}</a>
           </div>
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-center gap-8 w-full">
           <div>views: {item.views}</div>
-          <div>{item.createdAt}</div>
-          <Button variant={"link"}>View QR Code</Button>
+          <div>
+            {date} | {time}
+          </div>
+          <Button variant={"link"} onClick={() => handleQR(item.id)}>
+            View QR Code
+          </Button>
         </div>
       </CardContent>
     </Card>

@@ -4,11 +4,14 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
+import { error } from "console";
 import { useRouter } from "next/navigation";
 import { FormEvent, use, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-export default function Page() {
+export default function Page({ params }) {
   const router = useRouter();
 
   const [title, setTitle] = useState<string>("");
@@ -19,7 +22,6 @@ export default function Page() {
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const controller = new AbortController();
 
-  // Store original values
   const [originalValues, setOriginalValues] = useState({
     title: "",
     originalUrl: "",
@@ -27,7 +29,7 @@ export default function Page() {
   });
 
   //@ts-expect-error annoying params
-  const { id }: any = use(params);
+  const { id } = use(params);
 
   useEffect(() => {
     async function getLinkDetails() {
@@ -62,7 +64,7 @@ export default function Page() {
     }
 
     getLinkDetails();
-  }, [id, controller.signal]);
+  }, [id]);
 
   // Check if any value has changed
   const hasChanged =
@@ -74,7 +76,7 @@ export default function Page() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const { data } = await axios.post(
+      const update = axios.post(
         "/api/link/update",
         {
           id: id,
@@ -84,6 +86,14 @@ export default function Page() {
         },
         { signal: controller.signal },
       );
+
+      toast.promise(update, {
+        error: "Failed to Up[]",
+        success: "Link Updated Successfully",
+        loading: "Updating Link...",
+      });
+
+      const { data } = await update;
 
       if (!data.ok) return null;
 
@@ -112,7 +122,10 @@ export default function Page() {
       </div>
 
       {isLoading ? (
-        <>loading</>
+        <>
+          <Skeleton className="w-full h-[50vh]" />
+          <Skeleton className="w-full h-[10vh]" />
+        </>
       ) : (
         <form
           className="flex flex-col gap-4 justify-center"

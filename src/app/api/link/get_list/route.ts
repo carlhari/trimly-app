@@ -8,7 +8,7 @@ export async function POST() {
   if (!user)
     return NextResponse.json(
       { error: "Error: Failed to retrived user data while getting link list" },
-      { status: 500 },
+      { status: 401 },
     );
 
   try {
@@ -18,7 +18,13 @@ export async function POST() {
           email: user.primaryEmailAddress?.emailAddress,
         },
       },
+      orderBy: [{ createdAt: "desc" }],
     });
+
+    if (!linklist)
+      return NextResponse.json({
+        error: "Error: Failed to retrieve the link list",
+      });
 
     const linklistCount = await prisma.link.count({
       where: {
@@ -47,7 +53,7 @@ export async function POST() {
         ok: false,
         error: "Error: error occurred while processing to get link list",
       },
-      { status: 500 },
+      { status: 401 },
     );
   }
 }

@@ -14,12 +14,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import LinkCard from "../components/LinkCard";
 import { LinkListTypes } from "../types/LinkList";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function Page() {
   const [linkList, setLinkList] = useState<LinkListTypes[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<any[]>([]);
   const [isEmpty, setEmpty] = useState<boolean>(false);
+  const [isDeleting, setDeleting] = useState<boolean>(false);
+
   const router = useRouter();
   useEffect(() => {
     async function get_link_list() {
@@ -55,23 +58,27 @@ export default function Page() {
   };
 
   const handleUpdate = async (id: string) => {
-    try {
-      const { data } = await axios.post("/api/link/update/check", { id: id });
+    return router.push(`/dashboard/${id}/update`);
+  };
 
-      if (!data.ok) return null;
-
-      return router.push(`/dashboard/${id}/update`);
-    } catch (error) {
-      console.error(error);
-    }
+  const handleQR = (id: string) => {
+    return router.push(`/dashboard/${id}/qr`);
   };
 
   const handleDelete = async () => {
+    setDeleting(true);
     try {
-      const deleteLink = await axios.post("/api/link/delete", {
+      const deleteLink = axios.post("/api/link/delete", {
         idList: selectedItem,
       });
-      const data = deleteLink.data;
+
+      toast.promise(deleteLink, {
+        error: "Failed to delete link",
+        success: "Link/s deleted successfully!",
+        loading: "Deleting link...",
+      });
+
+      const { data } = await deleteLink;
       if (data.ok === false) return console.error();
 
       setLinkList((prev) =>
@@ -80,6 +87,8 @@ export default function Page() {
       setSelectedItem([]);
     } catch (error) {
       console.error(error);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -104,25 +113,33 @@ export default function Page() {
     <>
       <div className="flex w-full justify-between items-center">
         <h1 className="text-3xl font-semibold">Link List</h1>
-        <Button>
+        <Button disabled={isDeleting}>
           <Link href="/dashboard/create">Create Link</Link>
         </Button>
       </div>
       <hr />,
       <div className="w-full flex items-center justify-between">
         {selectedItem.length !== 0 && (
-          <Button onClick={handleSelectAll} className="fade-in">
+          <Button
+            onClick={handleSelectAll}
+            className="fade-in"
+            disabled={isDeleting}
+          >
             Select all
           </Button>
         )}
         <div>0 Selected</div>
         <div className="flex items-center gap-4">
           {selectedItem.length !== 0 && (
-            <Button variant={"destructive"} onClick={handleDelete}>
+            <Button
+              variant={"destructive"}
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
               Delete
             </Button>
           )}
-          <Select defaultValue="newest" onValueChange={handleDateSort}>
+          <Select onValueChange={handleDateSort} defaultValue="newest">
             <SelectTrigger>
               Show:
               <SelectValue placeholder="Newest" />
@@ -144,6 +161,7 @@ export default function Page() {
                   setSelectedItem={setSelectedItem}
                   selectedItem={selectedItem}
                   handleUpdate={handleUpdate}
+                  handleQR={handleQR}
                 />
               </div>
             );
